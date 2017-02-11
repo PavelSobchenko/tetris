@@ -9,7 +9,13 @@ const uglify = require('gulp-uglify');
 
 const config = {
     scripts: {
-        url: ['js/**/**/*.js', 'js/**/*.js', 'js/*.js', '!js/main.min.js'],
+        url: [  'js/Constants.js',
+                'js/classes/*.js',
+                'js/models/*.js',
+                'js/collections/*.js',
+                'js/views/*.js',
+                'js/Page.js',
+                '!js/main.min.js'],
         output: 'main.min.js',
         dest : 'js/'
     },
