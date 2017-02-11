@@ -15,6 +15,7 @@ var app = app || {};
             this.speed = app.const.SPEED_START;
             this.cellRect = app.const.CELL;
             this.statePlaying = null;
+            this.blockMoveDown = false;
             this.CC = new app.FigureCollection(); // current figure
             this.FC = new app.FigureCollection(); // array of filled cells
 
@@ -47,9 +48,11 @@ var app = app || {};
 
             switch (e.keyCode) {
                 case 37:
+                    this.blockMoveDown = true;
                     this.moveFigure('left');
                     break;
                 case 39:
+                    this.blockMoveDown = true;
                     this.moveFigure('right');
                     break;
                 case 40:
@@ -78,6 +81,8 @@ var app = app || {};
                 this.speed = app.const.SPEED_START;
                 this.play();
             }
+            if(e.keyCode == 37 || e.keyCode == 39)
+                this.blockMoveDown = false;
         },
         gameOver: function () {
             this.stop();
@@ -157,16 +162,22 @@ var app = app || {};
             }.bind(this));
         },
         moveFigure: function (direct) {
-            if(direct == 'left' && this.checkLeft()) {
-                this.CC.each(function (cell) {
-                    cell.set('x', cell.get('x')-(app.const.CELL));
-                }.bind(this));
-            } else if(direct == 'right' && this.checkRight()) {
-                this.CC.each(function (cell) {
-                    cell.set('x', cell.get('x')+(app.const.CELL));
-                }.bind(this));
+            if(direct == 'left') {
+                if(this.checkLeft()) {
+                    this.CC.each(function (cell) {
+                        cell.set('x', cell.get('x')-(app.const.CELL));
+                    }.bind(this));
+                } else
+                    this.blockMoveDown = false; // unblock keydown event
+            } else if(direct == 'right') {
+                if(this.checkRight()) {
+                    this.CC.each(function (cell) {
+                        cell.set('x', cell.get('x')+(app.const.CELL));
+                    }.bind(this));
+                } else
+                    this.blockMoveDown = false;
             }
-            else {
+            else if(!this.blockMoveDown) {
                 this.CC.each(function (cell) {
                     cell.set('y', cell.get('y')+(app.const.CELL));
                 });
