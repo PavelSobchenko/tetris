@@ -33,10 +33,10 @@ var app = app || {};
         },
 
         // set func
-        setCtx: function (settingObj) {
-            if(settingObj) {
-                this.ctx.fillStyle = settingObj.fill_style || app.const.FILL_STYLE;
-                this.ctx.strokeStyle = settingObj.stroke_style || app.const.STROKE_STYLE;
+        setCtx: function (config) {
+            if(config) {
+                this.ctx.fillStyle = config.fill_style || app.const.FILL_STYLE;
+                this.ctx.strokeStyle = config.stroke_style || app.const.STROKE_STYLE;
             } else {
                 this.ctx.fillStyle = app.const.FILL_STYLE;
                 this.ctx.strokeStyle = app.const.STROKE_STYLE;
@@ -46,21 +46,9 @@ var app = app || {};
             if(!this.statePlaying)
                 return;
 
-            switch (e.keyCode) {
-                case 37:
-                    this.blockMoveDown = true;
-                    this.moveFigure('left');
-                    break;
-                case 39:
-                    this.blockMoveDown = true;
-                    this.moveFigure('right');
-                    break;
-                case 40:
-                    if(this.speed < app.const.SPEED_MAX) {
-                        this.speed += app.const.SPEED_STEP;
-                        this.play();
-                    }
-                    break;
+            if(e.keyCode == 40 && this.speed < app.const.SPEED_MAX) {
+                this.speed += app.const.SPEED_STEP;
+                this.play();
             }
         },
         keyUpController: function (e) {
@@ -81,8 +69,22 @@ var app = app || {};
                 this.speed = app.const.SPEED_START;
                 this.play();
             }
-            if(e.keyCode == 37 || e.keyCode == 39)
+
+            if(e.keyCode == 37) {
+                this.blockMoveDown = true;
+                this.moveFigure('left');
                 this.blockMoveDown = false;
+            }
+            if(e.keyCode == 39) {
+                this.blockMoveDown = true;
+                this.moveFigure('right');
+                this.blockMoveDown = false;
+            }
+            if(e.keyCode == 38) {
+                if(this.checkRotate()) {
+                    console.log('rotate');
+                }
+            }
         },
         gameOver: function () {
             this.stop();
@@ -91,31 +93,44 @@ var app = app || {};
             console.log('gameover');
         },
 
-        checkLeft: function () {
-            var cell = this.CC.findWhere({left: true});
-            var fillCell = this.FC.findWhere({
-                x: cell.get('x')-this.cellRect,
-                y: cell.get('y')
-            });
+        // check func
+        // contain logic for collision
+        // right/left/bottom border
+        // check for gameover
+        checkLeft: function (collection) {
+            var cells = collection.where({left: true}), result = true;
 
-            if(cell.get('x') == 0 || fillCell)
-                return false;
+            _.each(cells, function (cell) {
+                var fillCell = this.FC.findWhere({
+                    x: cell.get('x')-this.cellRect,
+                    y: cell.get('y')
+                });
 
-            return true;
+                if(cell.get('x') <= 0 || fillCell) {
+                    result = false;
+                    return true; // break _.each
+                }
+            }.bind(this));
+
+            return result;
         },
-        checkRight: function () {
-            var cell = this.CC.findWhere({right: true});
-            var fillCell = this.FC.findWhere({
-                x: cell.get('x')+this.cellRect,
-                y: cell.get('y')
-            });
+        checkRight: function (collection) {
+            var cells = collection.where({right: true}), result = true;
 
-            if(cell.get('x')+this.cellRect == app.const.WIDTH || fillCell)
-                return false;
+            _.each(cells, function (cell) {
+                var fillCell = this.FC.findWhere({
+                    x: cell.get('x')+this.cellRect,
+                    y: cell.get('y')
+                });
 
-            return true;
+                if(cell.get('x')+this.cellRect >= app.const.WIDTH || fillCell) {
+                    result = false;
+                    return true;
+                }
+            }.bind(this));
+
+            return result;
         },
-        // DATA func
         check: function () {
             var cont = true; // continue?
 
@@ -130,6 +145,7 @@ var app = app || {};
             if(!cont) {
                 this.endLoop();
                 this.startLoop();
+                return;
             }
 
             // check for fill cells
@@ -145,42 +161,76 @@ var app = app || {};
             if(!cont) {
                 this.endLoop();
                 // check for gameover
-                if(this.CC.find(function (cell) { return cell.get('y') == 0; })) {
+                if(this.CC.findWhere({y: 0})) {
                     this.gameOver();
                 } else {
                     this.startLoop();
                 }
             }
         },
+        checkFillRow: function () {
+            var group = this.FC.groupBy('y');
+            _.each(group, function (arr, y) {
+                if(arr.length === app.const.ROW_WIDTH) {
+                    // this.removeFillRow(y);
+                    // this.checkFillRow();
+                }
+            }.bind(this));
+        },
+        checkRotate: function () {
+            if(this.CC.type == 1) // cube no rotate
+                return false;
+
+            var tmpCollection = new app.FigureCollection();
+            tmpCollection.add(this.CC.getNewArr());
+            if(this.checkLeft(tmpCollection) && this.checkRight(tmpCollection)) {
+                var no_valid_cell = tmpCollection.find(function (cell) {
+                    if(cell.get('y')+this.cellRect >= app.const.HEIGHT) {
+                        return cell;
+                    }
+                }.bind(this));
+
+                if(no_valid_cell)
+                    return;
+
+                this.CC.rotateSuccess();
+                tmpCollection.setCustom(this.CC.getCustom());
+                this.CC = tmpCollection;
+            }
+        },
+
+        // LOOP
         startLoop: function () {
-            this.CC.createFigure(0);
+            // var rand = app.classes.helper.getRandomInt(0, 4);
+            this.CC.createFigure(2);
             this.play();
         },
         endLoop: function () {
             this.CC.each(function (cell) {
                 this.FC.add(cell);
             }.bind(this));
+            this.checkFillRow();
         },
         moveFigure: function (direct) {
             if(direct == 'left') {
-                if(this.checkLeft()) {
+                if(this.checkLeft(this.CC)) {
                     this.CC.each(function (cell) {
-                        cell.set('x', cell.get('x')-(app.const.CELL));
+                        cell.set('x', cell.get('x')-this.cellRect);
                     }.bind(this));
                 } else
-                    this.blockMoveDown = false; // unblock keydown event
+                    this.blockMoveDown = false; // unblock move down
             } else if(direct == 'right') {
-                if(this.checkRight()) {
+                if(this.checkRight(this.CC)) {
                     this.CC.each(function (cell) {
-                        cell.set('x', cell.get('x')+(app.const.CELL));
+                        cell.set('x', cell.get('x')+this.cellRect);
                     }.bind(this));
                 } else
                     this.blockMoveDown = false;
             }
             else if(!this.blockMoveDown) {
                 this.CC.each(function (cell) {
-                    cell.set('y', cell.get('y')+(app.const.CELL));
-                });
+                    cell.set('y', cell.get('y')+this.cellRect);
+                }.bind(this));
             }
         },
         play: function () {
@@ -208,6 +258,10 @@ var app = app || {};
 
             this.ctx.strokeRect(x, y, this.cellRect-0.5, this.cellRect-0.5);
             this.ctx.fillRect(x, y, this.cellRect-2, this.cellRect-2);
+        },
+        removeFillRow: function (y) {
+            var removeModels = this.FC.where({y: parseInt(y)});
+            console.log(removeModels);
         },
         clear: function () {
             this.ctx.clearRect(0,0, app.const.WIDTH, app.const.HEIGHT);

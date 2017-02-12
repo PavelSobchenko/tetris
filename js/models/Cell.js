@@ -7,7 +7,8 @@ var app = app || {};
             x: 0,
             y: 0,
             left: false,
-            right: false
+            right: false,
+            center: false
         }
     });
 })();

@@ -13,4 +13,6 @@ var app = app || {};
         STROKE_STYLE: '#3b6cba',
         FILL_STYLE: '#1464e5'
     };
+
+    app.const.ROW_WIDTH = app.const.WIDTH/app.const.CELL;
 })();
