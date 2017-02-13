@@ -41,6 +41,7 @@ var app = app || {};
                     {x:c, y: 0-r, left: true},
                     {x:c+r, y: 0-r, right: true}
                 ] // Z
+                // TODO: add reverse Z
             ];
             var type_map = ['I', 'C', 'L', 'T', 'Z'];
 
@@ -88,6 +89,7 @@ var app = app || {};
                     [['left', 'right'], ['left', 'right'], ['left', 'right', 'center'], ['left', 'right']],
                     [['left'], null, ['center'], ['right']]
                 ],
+                // TODO: fix right border
                 'L': [
                     [['right'], ['center'], ['left'], ['left', 'right']],
                     [['left', 'right'], ['left', 'right', 'center'], ['right'], ['left']],

@@ -202,7 +202,7 @@ var app = app || {};
         // LOOP
         startLoop: function () {
             // var rand = app.classes.helper.getRandomInt(0, 4);
-            this.CC.createFigure(2);
+            this.CC.createFigure(1);
             this.play();
         },
         endLoop: function () {
