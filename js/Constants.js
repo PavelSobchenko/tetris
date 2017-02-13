@@ -3,16 +3,27 @@ var app = app || {};
 (function () {
     app.const = {
         // canvas
-        WIDTH: 216,
-        HEIGHT: 280,
-        CELL: 8,
-        SPEED_START: 5,
+        WIDTH: 240,
+        HEIGHT: 304,
+        CELL: 16,
+        SPEED_START: 3,
         SPEED_MAX: 45,
         SPEED_STEP: 10,
         SIZE_FIGURE: 4,
-        STROKE_STYLE: '#3b6cba',
-        FILL_STYLE: '#1464e5',
-        REMOVE_CELL_ANIMATION_TIME: 50 // ms
+        STROKE_STYLE: '#000',
+        FILL_STYLE: '#333',
+        REMOVE_CELL_ANIMATION_TIME: 50, // ms
+
+        // figure colors
+        FIGURE_COLORS: {
+            I: ['#1464e5', '#3b6cba'], // fill\stroke
+            C: ['#fc2d2d', '#bf1616'],
+            L: ['#f9921b', '#e87f06'],
+            RL: ['#e9fc1b', '#d5e80d'],
+            T: ['#6aed1e', '#5bd813'],
+            Z: ['#3afca8', '#20d888'],
+            RZ: ['#853ff4', '#6015d8']
+        }
     };
     var r = app.const.CELL, c = (app.const.WIDTH/2)-(r/2);
 

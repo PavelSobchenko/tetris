@@ -8,7 +8,9 @@ var app = app || {};
             y: 0,
             left: false,
             right: false,
-            center: false
+            center: false,
+            stroke: '',
+            fill: ''
         }
     });
 })();

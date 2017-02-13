@@ -12,9 +12,15 @@ var app = app || {};
             this.currentState = 0;
             this.type = app.const.TYPE_MAP[intg];
             this.reset(app.const.FIGURE[intg]);
+            this.setColor();
         },
-        rotateFigure: function () {
-
+        setColor: function () {
+            this.each(function (cell) {
+                cell.set({
+                    'fill': app.const.FIGURE_COLORS[this.type][0],
+                    'stroke': app.const.FIGURE_COLORS[this.type][1]
+                });
+            }.bind(this));
         },
         getNewArr: function () {
             if(this.currentState > 3)

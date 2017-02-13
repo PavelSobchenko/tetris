@@ -34,10 +34,10 @@ var app = app || {};
         },
 
         // set func
-        setCtx: function (config) {
-            if(config) {
-                this.ctx.fillStyle = config.fill_style || app.const.FILL_STYLE;
-                this.ctx.strokeStyle = config.stroke_style || app.const.STROKE_STYLE;
+        setCtx: function (cell) {
+            if(cell) {
+                this.ctx.fillStyle = cell.get('fill') || app.const.FILL_STYLE;
+                this.ctx.strokeStyle = cell.get('stroke') || app.const.STROKE_STYLE;
             } else {
                 this.ctx.fillStyle = app.const.FILL_STYLE;
                 this.ctx.strokeStyle = app.const.STROKE_STYLE;
@@ -60,7 +60,7 @@ var app = app || {};
             if(ctrl) { // develop helpers
                 if(e.keyCode == 81) { // Q
                     this.endLoop();
-                    if(!this.removeRow)
+                    if(!this.removeRow && this.statePlaying)
                         this.startLoop();
                 }
                 if(e.keyCode == 88) { // X
@@ -83,7 +83,7 @@ var app = app || {};
                 this.blockMoveDown = false;
             }
             if(e.keyCode == 38) {
-                if(this.checkRotate()) {
+                if(this.rotate()) {
                     console.log('rotate');
                 }
             }
@@ -91,6 +91,8 @@ var app = app || {};
         gameOver: function () {
             this.stop();
             this.statePlaying = null;
+            this.removeRow = false;
+            this.gameOverState = true;
             app.eventDispatcher.trigger('gameover');
             console.log('gameover');
         },
@@ -146,8 +148,7 @@ var app = app || {};
 
             if(!cont) {
                 this.endLoop();
-                if(!this.removeRow)
-                    this.startLoop();
+                this.startLoop();
                 return;
             }
 
@@ -163,12 +164,7 @@ var app = app || {};
 
             if(!cont) {
                 this.endLoop();
-                // check for gameover
-                if(this.CC.findWhere({y: 0})) {
-                    this.gameOver();
-                } else if(!this.removeRow) {
-                    this.startLoop();
-                }
+                this.startLoop();
             }
         },
         checkFillRow: function () {
@@ -185,7 +181,7 @@ var app = app || {};
                 app.eventDispatcher.trigger('removedFillRow');
             }
         },
-        checkRotate: function () {
+        rotate: function () {
             if(this.CC.type == 'C') // cube is figure without rotate
                 return false;
 
@@ -203,17 +199,23 @@ var app = app || {};
 
                 this.CC.rotateSuccess();
                 tmpCollection.setCustom(this.CC.getCustom());
+                tmpCollection.setColor();
                 this.CC = tmpCollection;
             }
         },
 
         // LOOP
         startLoop: function () {
-            // var rand = app.classes.helper.getRandomInt(0, 4);
-            this.CC.createFigure(0);
+            if(this.removeRow || this.gameOverState)
+                return;
+            var rand = app.classes.helper.getRandomInt(0, 6);
+            this.CC.createFigure(rand);
             this.play();
         },
         endLoop: function () {
+            if(this.CC.find(function (cell) { return cell.get('y') <= 0; })) {
+                this.gameOver();
+            }
             this.CC.each(function (cell) {
                 this.FC.add(cell);
             }.bind(this));
@@ -263,11 +265,15 @@ var app = app || {};
         drawCell: function (cell) {
             var x = cell.get('x'),
                 y = cell.get('y');
-
+            this.setCtx(cell);
             this.ctx.strokeRect(x, y, this.cellRect-0.5, this.cellRect-0.5);
             this.ctx.fillRect(x, y, this.cellRect-2, this.cellRect-2);
         },
         removeFillRow: function (row) {
+            // if(!this.statePlaying) {
+            //     this.removeRow = false;
+            //     return;
+            // }
             this.removeRow = true;
             var y = row[0].get('y');
             var interval = setInterval(function () {
