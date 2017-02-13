@@ -178,7 +178,7 @@ var app = app || {};
             }.bind(this));
         },
         checkRotate: function () {
-            if(this.CC.type == 1) // cube no rotate
+            if(this.CC.type == 'C') // cube is figure without rotate
                 return false;
 
             var tmpCollection = new app.FigureCollection();
@@ -202,7 +202,7 @@ var app = app || {};
         // LOOP
         startLoop: function () {
             // var rand = app.classes.helper.getRandomInt(0, 4);
-            this.CC.createFigure(1);
+            this.CC.createFigure(3);
             this.play();
         },
         endLoop: function () {
