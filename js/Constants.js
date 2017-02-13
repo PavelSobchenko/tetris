@@ -11,7 +11,8 @@ var app = app || {};
         SPEED_STEP: 10,
         SIZE_FIGURE: 4,
         STROKE_STYLE: '#3b6cba',
-        FILL_STYLE: '#1464e5'
+        FILL_STYLE: '#1464e5',
+        REMOVE_CELL_ANIMATION_TIME: 50 // ms
     };
     var r = app.const.CELL, c = (app.const.WIDTH/2)-(r/2);
 

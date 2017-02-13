@@ -16,15 +16,16 @@ var app = app || {};
             this.cellRect = app.const.CELL;
             this.statePlaying = null;
             this.blockMoveDown = false;
+            this.removeRow = false;
             this.CC = new app.FigureCollection(); // current figure
             this.FC = new app.FigureCollection(); // array of filled cells
 
-            app.eventDispatcher.on('startPlay', this.startLoop, this);
+            app.eventDispatcher.on('startPlay removedFillRow', this.startLoop, this);
             $(window).on('keyup', this.keyUpController.bind(this));
             $(window).on('keydown', this.keyDownController.bind(this));
         },
         render: function () {
-            if(!this.statePlaying)
+            if(!this.statePlaying || this.removeRow)
                 return;
 
             this.moveFigure();
@@ -59,7 +60,8 @@ var app = app || {};
             if(ctrl) { // develop helpers
                 if(e.keyCode == 81) { // Q
                     this.endLoop();
-                    this.startLoop();
+                    if(!this.removeRow)
+                        this.startLoop();
                 }
                 if(e.keyCode == 88) { // X
                     this.gameOver();
@@ -144,7 +146,8 @@ var app = app || {};
 
             if(!cont) {
                 this.endLoop();
-                this.startLoop();
+                if(!this.removeRow)
+                    this.startLoop();
                 return;
             }
 
@@ -163,19 +166,24 @@ var app = app || {};
                 // check for gameover
                 if(this.CC.findWhere({y: 0})) {
                     this.gameOver();
-                } else {
+                } else if(!this.removeRow) {
                     this.startLoop();
                 }
             }
         },
         checkFillRow: function () {
             var group = this.FC.groupBy('y');
-            _.each(group, function (arr, y) {
-                if(arr.length === app.const.ROW_WIDTH) {
-                    // this.removeFillRow(y);
-                    // this.checkFillRow();
-                }
-            }.bind(this));
+            var row = _.find(group, function (arr) {
+                return arr.length >= app.const.ROW_WIDTH;
+            });
+            if(row) {
+                // TODO: sort wrong
+                row = _.sortBy(row, 'x');
+                this.removeFillRow(row);
+            } else {
+                this.removeRow = false;
+                app.eventDispatcher.trigger('removedFillRow');
+            }
         },
         checkRotate: function () {
             if(this.CC.type == 'C') // cube is figure without rotate
@@ -202,7 +210,7 @@ var app = app || {};
         // LOOP
         startLoop: function () {
             // var rand = app.classes.helper.getRandomInt(0, 4);
-            this.CC.createFigure(3);
+            this.CC.createFigure(0);
             this.play();
         },
         endLoop: function () {
@@ -259,9 +267,27 @@ var app = app || {};
             this.ctx.strokeRect(x, y, this.cellRect-0.5, this.cellRect-0.5);
             this.ctx.fillRect(x, y, this.cellRect-2, this.cellRect-2);
         },
-        removeFillRow: function (y) {
-            var removeModels = this.FC.where({y: parseInt(y)});
-            console.log(removeModels);
+        removeFillRow: function (row) {
+            this.removeRow = true;
+            var y = row[0].get('y');
+            var interval = setInterval(function () {
+                this.clear();
+                if(!row.length) {
+                    clearInterval(interval);
+                    this.FC.each(function (cell) {
+                        if(cell.get('y')<y)
+                            cell.set('y', cell.get('y')+this.cellRect);
+                    }.bind(this));
+                    this.FC.each(this.drawCell, this);
+                    this.checkFillRow();
+                    return;
+                }
+
+                this.FC.remove(row[row.length-1]);
+                this.FC.each(this.drawCell, this);
+                row.pop();
+            }.bind(this), app.const.REMOVE_CELL_ANIMATION_TIME);
+            this.stop();
         },
         clear: function () {
             this.ctx.clearRect(0,0, app.const.WIDTH, app.const.HEIGHT);
