@@ -12,6 +12,8 @@ var app = app || {};
             app.eventDispatcher = _.extend({}, Backbone.Events );
 
             app.views.canvas = new app.CanvasView();
+            app.views.panel = new app.PanelView();
+            app.views.next_figure = new app.NextFigureView();
 
             this.startPlay();
         },

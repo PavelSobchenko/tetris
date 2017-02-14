@@ -2,18 +2,16 @@ var app = app || {};
 
 (function () {
     "use strict";
-    app.CanvasView = Backbone.View.extend({
+    app.CanvasView = app.Canvas.extend({
         el: '#cnvs',
         initialize: function () {
-            this.el.style.border = '1px solid #333';
             this.el.height = app.const.HEIGHT;
             this.el.width = app.const.WIDTH;
-
-            this.ctx = this.el.getContext("2d");
+            
+            app.Canvas.prototype.initialize.apply(this);
             this.setCtx();
 
             this.speed = app.const.SPEED_START;
-            this.cellRect = app.const.CELL;
             this.statePlaying = null;
             this.blockMoveDown = false;
             this.removeRow = false;
@@ -34,15 +32,6 @@ var app = app || {};
         },
 
         // set func
-        setCtx: function (cell) {
-            if(cell) {
-                this.ctx.fillStyle = cell.get('fill') || app.const.FILL_STYLE;
-                this.ctx.strokeStyle = cell.get('stroke') || app.const.STROKE_STYLE;
-            } else {
-                this.ctx.fillStyle = app.const.FILL_STYLE;
-                this.ctx.strokeStyle = app.const.STROKE_STYLE;
-            }
-        },
         keyDownController: function (e) {
             if(!this.statePlaying)
                 return;
@@ -175,6 +164,7 @@ var app = app || {};
             if(row) {
                 // TODO: sort wrong
                 row = _.sortBy(row, 'x');
+                app.eventDispatcher.trigger('removeRow', app.const.REMOVE_ROW);
                 this.removeFillRow(row);
             } else {
                 this.removeRow = false;
@@ -213,6 +203,7 @@ var app = app || {};
             this.play();
         },
         endLoop: function () {
+            app.eventDispatcher.trigger('endLoop', app.const.END_LOOP);
             if(this.CC.find(function (cell) { return cell.get('y') <= 0; })) {
                 this.gameOver();
             }
@@ -262,18 +253,7 @@ var app = app || {};
             this.CC.each(this.drawCell, this);
             this.FC.each(this.drawCell, this);
         },
-        drawCell: function (cell) {
-            var x = cell.get('x'),
-                y = cell.get('y');
-            this.setCtx(cell);
-            this.ctx.strokeRect(x, y, this.cellRect-0.5, this.cellRect-0.5);
-            this.ctx.fillRect(x, y, this.cellRect-2, this.cellRect-2);
-        },
         removeFillRow: function (row) {
-            // if(!this.statePlaying) {
-            //     this.removeRow = false;
-            //     return;
-            // }
             this.removeRow = true;
             var y = row[0].get('y');
             var interval = setInterval(function () {
@@ -294,9 +274,6 @@ var app = app || {};
                 row.pop();
             }.bind(this), app.const.REMOVE_CELL_ANIMATION_TIME);
             this.stop();
-        },
-        clear: function () {
-            this.ctx.clearRect(0,0, app.const.WIDTH, app.const.HEIGHT);
         }
     });
 })();

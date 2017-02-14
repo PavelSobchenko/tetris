@@ -6,13 +6,17 @@ var app = app || {};
         WIDTH: 240,
         HEIGHT: 304,
         CELL: 16,
-        SPEED_START: 3,
+        SPEED_START: 5,
         SPEED_MAX: 45,
         SPEED_STEP: 10,
         SIZE_FIGURE: 4,
         STROKE_STYLE: '#000',
         FILL_STYLE: '#333',
         REMOVE_CELL_ANIMATION_TIME: 50, // ms
+        
+        // points
+        END_LOOP: 10,
+        REMOVE_ROW: 100,
 
         // figure colors
         FIGURE_COLORS: {

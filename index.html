@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>tetris 3.0</title>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <div id="page">
-        <canvas id="cnvs"></canvas>
+        <canvas id="cnvs" class="fl-l bdr"></canvas>
+        <div id="panel" class="fl-r bdr">
+            TETRIS 3.0.
+            <div class="points tar"><span class="fw">0</span></div>
+            <div>Next:</div>
+            <canvas id="nextFigure" class="bdr"></canvas>
+        </div>
     </div>
 <script src="lib/all.min.js"></script>
 <script src="js/main.min.js"></script>
