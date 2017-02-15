@@ -15,6 +15,7 @@ var app = app || {};
             this.statePlaying = null;
             this.blockMoveDown = false;
             this.removeRow = false;
+            this.nextFigureType = null;
             this.CC = new app.FigureCollection(); // current figure
             this.FC = new app.FigureCollection(); // array of filled cells
 
@@ -166,7 +167,7 @@ var app = app || {};
                 row = _.sortBy(row, 'x');
                 app.eventDispatcher.trigger('removeRow', app.const.REMOVE_ROW);
                 this.removeFillRow(row);
-            } else {
+            } else if(this.removeRow) {
                 this.removeRow = false;
                 app.eventDispatcher.trigger('removedFillRow');
             }
@@ -198,8 +199,15 @@ var app = app || {};
         startLoop: function () {
             if(this.removeRow || this.gameOverState)
                 return;
-            var rand = app.classes.helper.getRandomInt(0, 6);
-            this.CC.createFigure(rand);
+            
+            if(this.nextFigureType === null) {
+                this.CC.createFigure(app.classes.helper.getRandomInt(0, 6));
+            } else {
+                this.CC.createFigure(this.nextFigureType);
+            }
+            
+            this.nextFigureType = app.classes.helper.getRandomInt(0, 6);
+            app.eventDispatcher.trigger('nextFigure', this.nextFigureType);
             this.play();
         },
         endLoop: function () {
@@ -238,7 +246,7 @@ var app = app || {};
             if(this.playId)
                 this.stop();
             this.playId = setInterval(this.render.bind(this), 1000 / this.speed);
-            this.statePlaying = 'play'
+            this.statePlaying = 'play';
         },
         stop: function () {
             clearInterval(this.playId);

@@ -14,6 +14,15 @@ var app = app || {};
             this.reset(app.const.FIGURE[intg]);
             this.setColor();
         },
+        moveToCenter: function () {
+            var coords = app.const.NEXT_FIGURE_POSITION[this.type];
+            this.each(function (cell, i) {
+                cell.set({
+                    'x': coords[i][0],
+                    'y': coords[i][1]
+                });
+            });
+        },
         setColor: function () {
             this.each(function (cell) {
                 cell.set({

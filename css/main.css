@@ -1,0 +1,51 @@
+#page {
+    width: 600px;
+    font-family: Monospaced;
+}
+#cnvs {
+
+}
+#panel {
+    box-sizing: border-box;
+    padding: 15px;
+    border-radius: 5px;
+    width: 300px;
+}
+#panel * {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+
+.points {
+    margin: 10px 0 20px;
+    border-top: 2px solid #333333;
+    border-bottom: 2px solid #333333;
+    height: 30px;
+}
+.points span {
+    display: block;
+    line-height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fl-l {
+    float: left;
+}
+
+.fl-r {
+    float: right;
+}
+
+.fw {
+    font-weight: 700;
+}
+
+.bdr {
+    border: 1px solid #333;
+}
+
+.tar {
+    text-align: right;
+}

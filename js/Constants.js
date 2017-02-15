@@ -29,7 +29,8 @@ var app = app || {};
             RZ: ['#853ff4', '#6015d8']
         }
     };
-    var r = app.const.CELL, c = (app.const.WIDTH/2)-(r/2);
+    var r = app.const.CELL, c = (app.const.WIDTH/2)-(r/2),
+        r2 = r*2, r3 = r*3, r4 = r*4, sr = r/2;
 
     // count cells in one row
     app.const.ROW_WIDTH = app.const.WIDTH/r;
@@ -156,4 +157,14 @@ var app = app || {};
             ['r', ['c', 'l'], 'r', 'l']
         ]
     };
+
+    app.const.NEXT_FIGURE_POSITION = {
+        'I': [[r, r2+sr], [r2, r2+sr], [r3, r2+sr], [r4, r2+sr]],
+        'C': [[r2, r2], [r3, r2], [r2, r3], [r3, r3]],
+        'L': [[r2, r], [r2, r2], [r2, r3], [r3, r3]],
+        'RL': [[r3, r], [r3, r2], [r3, r3], [r2, r3]],
+        'T': [[r2+sr, r3], [r+sr, r2], [r2+sr, r2], [r3+sr, r2]],
+        'Z': [[r+sr, r2], [r2+sr, r2], [r2+sr, r3], [r3+sr, r3]],
+        'RZ': [[r3+sr, r2], [r2+sr, r2], [r2+sr, r3], [r+sr, r3]]
+    }
 })();
