@@ -13,6 +13,7 @@ var app = app || {};
             this.NF = new app.FigureCollection();
 
             app.eventDispatcher.on('nextFigure', this.render, this);
+            app.eventDispatcher.on('gameover', this.gameOver, this);
         },
 
         render: function (type) {
@@ -20,6 +21,9 @@ var app = app || {};
             this.NF.moveToCenter();
             this.clear();
             this.NF.each(this.drawCell, this);
+        },
+        gameOver: function () {
+            this.clear();
         }
     });
 })();

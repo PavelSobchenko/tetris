@@ -84,7 +84,6 @@ var app = app || {};
             this.removeRow = false;
             this.gameOverState = true;
             app.eventDispatcher.trigger('gameover');
-            console.log('gameover');
         },
 
         // check func

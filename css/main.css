@@ -16,6 +16,14 @@
     max-width: 100%;
 }
 
+label {
+    cursor: pointer;
+}
+
+td:last-child {
+    text-align: center;
+}
+
 .points {
     margin: 10px 0 20px;
     border-top: 2px solid #333333;
@@ -48,4 +56,12 @@
 
 .tar {
     text-align: right;
+}
+
+.tac {
+    text-align: center;
+}
+
+.hidden {
+    display: none;
 }

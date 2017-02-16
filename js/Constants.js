@@ -18,6 +18,8 @@ var app = app || {};
         END_LOOP: 10,
         REMOVE_ROW: 100,
 
+        GAME_OVER_FILL: 'rgba(11, 1, 28, 0.75)',
+
         // figure colors
         FIGURE_COLORS: {
             I: ['#1464e5', '#3b6cba'], // fill\stroke
@@ -27,7 +29,10 @@ var app = app || {};
             T: ['#6aed1e', '#5bd813'],
             Z: ['#3afca8', '#20d888'],
             RZ: ['#853ff4', '#6015d8']
-        }
+        },
+        
+        // PANEL
+        SCORE_SIZE_ROW: 5
     };
     var r = app.const.CELL, c = (app.const.WIDTH/2)-(r/2),
         r2 = r*2, r3 = r*3, r4 = r*4, sr = r/2;
@@ -166,5 +171,5 @@ var app = app || {};
         'T': [[r2+sr, r3], [r+sr, r2], [r2+sr, r2], [r3+sr, r2]],
         'Z': [[r+sr, r2], [r2+sr, r2], [r2+sr, r3], [r3+sr, r3]],
         'RZ': [[r3+sr, r2], [r2+sr, r2], [r2+sr, r3], [r+sr, r3]]
-    }
+    };
 })();

@@ -10,9 +10,27 @@
         <canvas id="cnvs" class="fl-l bdr"></canvas>
         <div id="panel" class="fl-r bdr">
             TETRIS 3.0.
+            <label id="playerName" class="fl-r">
+                <span></span>
+                <input type="text" class="hidden">
+            </label>
             <div class="points tar"><span class="fw">0</span></div>
             <div>Next:</div>
             <canvas id="nextFigure" class="bdr"></canvas>
+            <p class="tac">SCORE:</p>
+            <hr>
+            <table width="100%">
+                <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Points</th>
+                </tr>
+                </thead>
+                <tbody id="score">
+
+                </tbody>
+            </table>
+            <a href="#" class="fl-r hidden" id="show_all_score">show all</a>
         </div>
     </div>
 <script src="lib/all.min.js"></script>
