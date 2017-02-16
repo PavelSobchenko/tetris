@@ -8,20 +8,15 @@ var app = app || {};
             this.cellRect = app.const.CELL;
         },
 
-        setCtx: function (cell) {
-            if(cell) {
-                this.ctx.fillStyle = cell.get('fill') || app.const.FILL_STYLE;
-                this.ctx.strokeStyle = cell.get('stroke') || app.const.STROKE_STYLE;
-            } else {
-                this.ctx.fillStyle = app.const.FILL_STYLE;
-                this.ctx.strokeStyle = app.const.STROKE_STYLE;
-            }
+        setCtx: function (fill, stroke) {
+            this.ctx.fillStyle = fill || app.const.FILL_STYLE;
+            this.ctx.strokeStyle = stroke || app.const.STROKE_STYLE;
         },
 
         drawCell: function (cell) {
             var x = cell.get('x'),
                 y = cell.get('y');
-            this.setCtx(cell);
+            this.setCtx(cell.get('fill'), cell.get('stroke'));
             this.ctx.strokeRect(x, y, this.cellRect-0.5, this.cellRect-0.5);
             this.ctx.fillRect(x, y, this.cellRect-2, this.cellRect-2);
         },

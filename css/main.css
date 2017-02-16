@@ -9,7 +9,7 @@
     box-sizing: border-box;
     padding: 15px;
     border-radius: 5px;
-    width: 300px;
+    width: 330px;
 }
 #panel * {
     box-sizing: border-box;
@@ -60,6 +60,10 @@ td:last-child {
 
 .tac {
     text-align: center;
+}
+
+.ta {
+    text-align: left;
 }
 
 .hidden {

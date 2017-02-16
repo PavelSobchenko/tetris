@@ -15,11 +15,11 @@ var app = app || {};
             app.views.panel = new app.PanelView();
             app.views.next_figure = new app.NextFigureView();
 
-            this.startPlay();
-        },
-        startPlay: function () {
-            app.eventDispatcher.trigger('startPlay');
+            // this.startPlay();
         }
+        // startPlay: function () {
+        //     app.eventDispatcher.trigger('startPlay');
+        // }
     });
 
     $(document).ready(function () {

@@ -8,6 +8,7 @@ var app = app || {};
         events: {
             'click #playerName span': 'showInputName',
             'click #show_all_score': 'toggleScore',
+            'click #reset_score': 'resetScore',
             'blur #playerName input': 'setName',
             'keydown #playerName input': 'keyDownControl'
         },
@@ -18,7 +19,8 @@ var app = app || {};
                 name: this.$el.find('#playerName span'),
                 input: this.$el.find('#playerName input'),
                 score: this.$el.find('#score'),
-                all_score: this.$el.find('#show_all_score')
+                all_score: this.$el.find('#show_all_score'),
+                reset_score: this.$el.find('#reset_score')
             };
 
             if(!(this.playerName = localStorage.getItem('playerName')))
@@ -26,6 +28,7 @@ var app = app || {};
 
             if(localStorage.getItem('playerScore')) {
                 this.score = JSON.parse(localStorage.getItem('playerScore'));
+                this.blocks.reset_score.removeClass('hidden');
             }
 
             this.render();
@@ -33,6 +36,7 @@ var app = app || {};
             app.eventDispatcher.on('endLoop', this.updatePoints, this);
             app.eventDispatcher.on('removeRow', this.updatePoints, this);
             app.eventDispatcher.on('gameover', this.gameOver, this);
+            app.eventDispatcher.on('startNewGame', this.resetPoints, this);
         },
         render: function () {
             this.blocks.name.text(this.playerName);
@@ -40,6 +44,7 @@ var app = app || {};
         },
         renderScoreTable: function () {
             this.blocks.score.html('');
+
             for(var i = this.score.length-1, j = 0; i>=0; i--, j++) {
                 if(j<app.const.SCORE_SIZE_ROW)
                     this.blocks.score.append('<tr><td>'+this.score[i].name+'</td><td>'+this.score[i].points+'</td></tr>');
@@ -49,12 +54,27 @@ var app = app || {};
 
             if(this.score.length>app.const.SCORE_SIZE_ROW)
                 this.blocks.all_score.removeClass('hidden');
+
+            if(this.score.length)
+                this.blocks.reset_score.removeClass('hidden');
         },
         toggleScore: function (e) {
             e.preventDefault();
             this.blocks.score.find('.no_top_score').toggleClass('hidden');
             this.allScore = !this.allScore;
             this.allScore ? this.blocks.all_score.text('hide all'):this.blocks.all_score.text('show all');
+        },
+        resetScore: function (e) {
+            e.preventDefault();
+            this.blocks.reset_score.addClass('hidden');
+            this.blocks.all_score.addClass('hidden');
+            localStorage.removeItem('playerScore');
+            this.score = [];
+            this.renderScoreTable();
+        },
+        resetPoints: function () {
+            this.points = 0;
+            this.updatePoints(0);
         },
         updatePoints: function (points) {
             this.points += points;

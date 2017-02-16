@@ -16,13 +16,19 @@
             </label>
             <div class="points tar"><span class="fw">0</span></div>
             <div>Next:</div>
+            <div class="descript fl-r">
+                <b>space</b> - pause/play <br>
+                <b>arrow left\right</b> - move figure <br>
+                <b>arrow down</b> - speed <br>
+                <b>arrow top</b> - rotate
+            </div>
             <canvas id="nextFigure" class="bdr"></canvas>
             <p class="tac">SCORE:</p>
             <hr>
             <table width="100%">
                 <thead>
                 <tr>
-                    <th>Player</th>
+                    <th class="ta">Player</th>
                     <th>Points</th>
                 </tr>
                 </thead>
@@ -30,7 +36,10 @@
 
                 </tbody>
             </table>
-            <a href="#" class="fl-r hidden" id="show_all_score">show all</a>
+            <p>
+                <a href="#" class="fl-l hidden" id="reset_score">reset score</a>
+                <a href="#" class="fl-r hidden" id="show_all_score">show all</a>
+            </p>
         </div>
     </div>
 <script src="lib/all.min.js"></script>

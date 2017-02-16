@@ -18,7 +18,7 @@ var app = app || {};
         END_LOOP: 10,
         REMOVE_ROW: 100,
 
-        GAME_OVER_FILL: 'rgba(11, 1, 28, 0.75)',
+        GAME_OVER_FILL: 'rgba(11, 1, 28, 0.85)',
 
         // figure colors
         FIGURE_COLORS: {

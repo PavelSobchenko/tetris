@@ -10,19 +10,34 @@ var app = app || {};
             
             app.Canvas.prototype.initialize.apply(this);
             this.setCtx();
+            this.ctx.textAlign = "center";
+            this.ctx.textBaseline = "middle";
 
             this.speed = app.const.SPEED_START;
+            this.points = 0;
+
             this.statePlaying = null;
             this.blockMoveDown = false;
             this.removeRow = false;
             this.nextFigureType = null;
+            this.readyToStart = true;
+
             this.CC = new app.FigureCollection(); // current figure
             this.FC = new app.FigureCollection(); // array of filled cells
 
             app.eventDispatcher.on('startPlay removedFillRow', this.startLoop, this);
+            app.eventDispatcher.on('endLoop', this.updatePoints, this);
+            app.eventDispatcher.on('removeRow', this.updatePoints, this);
             $(window).on('keyup', this.keyUpController.bind(this));
             $(window).on('keydown', this.keyDownController.bind(this));
+
+            this.renderCanvasControl();
         },
+
+        updatePoints: function (points) {
+            this.points += points;
+        },
+
         render: function () {
             if(!this.statePlaying || this.removeRow)
                 return;
@@ -30,6 +45,37 @@ var app = app || {};
             this.moveFigure();
             this.draw();
             this.check();
+        },
+
+        renderCanvasControl: function () {
+            // prepare
+            this.ctx.font = 'bold 30px Monospaced';
+            this.setCtx(app.const.GAME_OVER_FILL);
+            this.ctx.fillRect(0, 0, app.const.WIDTH, app.const.HEIGHT);
+
+            var message = {}, desc = {};
+            if(this.gameOverState) {
+                message.text = "GAME OVER!";
+                desc.text = 'press space to restart';
+                // TODO: remove 120 on x coord
+                message.x = 120;
+                desc.x = 120;
+            } else if(this.readyToStart) {
+                message.text = "START!";
+                desc.text = 'press space to start';
+                message.x = 120;
+                desc.x = 120;
+            }
+
+            // message.x = (app.const.WIDTH-this.ctx.measureText(message.text).width)/2;
+            message.y = app.const.HEIGHT/2 - 15;
+            // desc.x = (app.const.WIDTH-this.ctx.measureText(message.text).width)/2;
+            desc.y = message.y + 30;
+
+            this.setCtx('#fff');
+            this.ctx.fillText(message.text, message.x, message.y);
+            this.ctx.font = '16px Monospaced';
+            this.ctx.fillText(desc.text, desc.x, desc.y);
         },
 
         // set func
@@ -43,20 +89,29 @@ var app = app || {};
             }
         },
         keyUpController: function (e) {
+            if(e.keyCode == 32 && !this.statePlaying) {
+                if(this.gameOverState) {
+                    this.gameOverState = false;
+                    this.FC.reset();
+                    app.eventDispatcher.trigger('startNewGame');
+                }
+                this.startLoop();
+                return;
+            }
             if(!this.statePlaying)
                 return;
 
             var ctrl = e.ctrlKey;
-            if(ctrl) { // develop helpers
-                if(e.keyCode == 81) { // Q
-                    this.endLoop();
-                    if(!this.removeRow && this.statePlaying)
-                        this.startLoop();
-                }
-                if(e.keyCode == 88) { // X
-                    this.gameOver();
-                }
-            }
+            // if(ctrl) { // develop helpers
+            //     if(e.keyCode == 81) { // Q
+            //         this.endLoop();
+            //         if(!this.removeRow && this.statePlaying)
+            //             this.startLoop();
+            //     }
+            //     if(e.keyCode == 88) { // X
+            //         this.gameOver();
+            //     }
+            // }
             if(e.keyCode == 40) {
                 this.speed = app.const.SPEED_START;
                 this.play();
@@ -80,10 +135,14 @@ var app = app || {};
         },
         gameOver: function () {
             this.stop();
+
             this.statePlaying = null;
             this.removeRow = false;
             this.gameOverState = true;
+
             app.eventDispatcher.trigger('gameover');
+
+            this.renderCanvasControl();
         },
 
         // check func
@@ -196,6 +255,7 @@ var app = app || {};
 
         // LOOP
         startLoop: function () {
+            this.readyToStart = false;
             if(this.removeRow || this.gameOverState)
                 return;
             
